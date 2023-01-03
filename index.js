@@ -1076,26 +1076,6 @@ var countriesWithDistricts = {
       "Kaynaşlı"
     ]
 };
-/*
-Adana: [
-    "Aladağ",
-    "Ceyhan",
-    "Çukurova",
-    "Feke",
-    "İmamoğlu",
-    "Karaisalı",
-    "Karataş",
-    "Kozan",
-    "Pozantı",
-    "Saimbeyli",
-    "Sarıçam",
-    "Seyhan",
-    "Tufanbeyli",
-    "Yumurtalık",
-    "Yüreğir"
-  ]
-*/
-
 
 function statPath(path) {  
     try {  
@@ -1185,7 +1165,7 @@ fetchRetail = async (name) => {
                 return false
             }else{
                 console.log(`[${nowTime(1)}] ${name} : ${error?.response?.status} - Error - Catch`);
-                fs.writeFileSync(`404_Data/${name}.json`, JSON.stringify({}));
+                fs.writeFileSync(`404_Data/${name}.json`, JSON.stringify([]));
             }
             
         });
