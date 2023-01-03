@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["bahis","iddia","bayi","retailer","address","koordinat","enlem","boylam"],
+  "author": "Ramazan Sancar",
   "license": "ISC",
   "dependencies": {
     "@rettersoft/retter-log": "^3.0.0",
