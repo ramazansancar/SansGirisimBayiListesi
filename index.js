@@ -1078,30 +1078,30 @@ var countriesWithDistricts = {
 };
 
 function statPath(path) {  
-    try {  
-      return fs.statSync(path);  
-    } catch (ex) {}  
-    return false;  
+  try {  
+    return fs.statSync(path);  
+  } catch (ex) {}  
+  return false;
 }
   
 function sleep(ms){
-    return Promise((resolve) => {
-        setRimeout(resolve,ms);
-    });
+  return Promise((resolve) => {
+    setRimeout(resolve,ms);
+  });
 }
 
 const nowTime = (i = 1) => {
-    let dates = new Date();
-    let year = dates.getFullYear();
-    let month = String([dates.getMonth() + 1]).padStart(2, '0');
-    let day = String(dates.getDate()).padStart(2, '0');
-    let hour = String(dates.getHours()).padStart(2, '0');
-    let minute = String(dates.getMinutes()).padStart(2, '0');
-    let second = String(dates.getSeconds()).padStart(2, '0');
-    if(i == 1 ) return day + `/` + month + `/` + year + ` ` + hour + `:` + minute + `:` + second
-    else if(i == 2 ) return day + `/` + month
-    else if(i == 3 ) return year +`_`+ month + `_` + day;
-    else return day + "-" + month + "-" + year +"_" + hour + "-" + minute+ "-" + second
+  let dates = new Date();
+  let year = dates.getFullYear();
+  let month = String([dates.getMonth() + 1]).padStart(2, '0');
+  let day = String(dates.getDate()).padStart(2, '0');
+  let hour = String(dates.getHours()).padStart(2, '0');
+  let minute = String(dates.getMinutes()).padStart(2, '0');
+  let second = String(dates.getSeconds()).padStart(2, '0');
+  if(i == 1 ) return day + `/` + month + `/` + year + ` ` + hour + `:` + minute + `:` + second
+  else if(i == 2 ) return day + `/` + month
+  else if(i == 3 ) return year +`_`+ month + `_` + day;
+  else return day + "-" + month + "-" + year +"_" + hour + "-" + minute+ "-" + second
 };
 
 const axios = require('axios');
@@ -1111,84 +1111,118 @@ const path = require('path');
 let AllData = [];
 
 fetchRetail = async (name) => {
-    var exist = statPath(`Data/${name}.json`);
-    if(exist){
+  var exist = statPath(`Datas/${name}.json`)
+  if(exist){
+    return false
+  }else{
+    await axios.get(`https://www.sansgirisim.com/data/${name}.json`,{
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.54 Safari/537.36',
+        //'User-Agent': 'PostmanRuntime/7.29.2',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7,zh-CN;q=0.6,zh-TW;q=0.5,zh;q=0.4,ja;q=0.3,ko;q=0.2',
+        'Content-Type': 'application/json',
+      }
+    }).then(result => {
+      var data = JSON.stringify(result.data)
+              .replaceAll('Retailer Number', 'Bayi_No')
+              .replaceAll('Branch Name', 'Sube_Adi')
+              .replaceAll('Address', 'Adres')
+              .replaceAll('Province', 'Sehir')
+              .replaceAll('District', 'Ilce')
+              .replaceAll(',"Y":', ',"Enlem":')
+              .replaceAll(',"X":', ',"Boylam":');
+
+      if(result.status == 200){
+        var exist = statPath(`Data/${name}.json`); 
+        if(exist){
+          return false
+        }else{
+          console.log(`[${nowTime(1)}] ${name} : ${result.status} - Başarıyla kayıt edildi!`);
+          fs.writeFileSync(`Data/${name}.json`, data);
+          fs.writeFileSync(`Datas/${name}.json`, data);
+
+          for(let i in data){
+            AllData.push(data[i])
+          }
+        }
+      }else if(result.status == 404){
+        var exist = statPath(`Data/${name}.json`); 
+        if(exist){
+          return false
+        }else{
+          console.log(`[${nowTime(1)}] ${name} : ${result.status} - Error - 72`);
+          fs.writeFileSync(`Data/404/${name}.json`, data);
+          fs.writeFileSync(`Datas/${name}.json`, data);
+        }
+      }else{
+        console.log(`[${nowTime(1)}] ${name} : ${result.status} - Error - 76`);
+        fs.writeFileSync(`Data/404/${name}.json`, JSON.stringify(data));
+        fs.writeFileSync(`Datas/${name}.json`, JSON.stringify(data));
+      }
+    }).catch(function(error) {
+      var exist = statPath(`Data/404/${name}.json`);
+      if(exist){
         return false
-    }else{
-        await axios.get(`https://www.sansgirisim.com/data/${name}.json`,{
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.54 Safari/537.36',
-                //'User-Agent': 'PostmanRuntime/7.29.2',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-                'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7,zh-CN;q=0.6,zh-TW;q=0.5,zh;q=0.4,ja;q=0.3,ko;q=0.2',
-                'Content-Type': 'application/json',
-            }
-        }).then(result => {
-            var data = JSON.stringify(result.data)
-                    .replaceAll('Retailer Number', 'Bayi_No')
-                    .replaceAll('Branch Name', 'Sube_Adi')
-                    .replaceAll('Address', 'Adres')
-                    .replaceAll('Province', 'Sehir')
-                    .replaceAll('District', 'Ilce')
-                    .replaceAll('Y', 'Enlem')
-                    .replaceAll('X', 'Boylam');
-
-            if(result.status == 200){
-                var exist = statPath(`Data/${name}.json`); 
-                if(exist){
-                    return false
-                }else{
-                    console.log(`[${nowTime(1)}] ${name} : ${result.status} - Başarıyla kayıt edildi!`);
-                    fs.writeFileSync(`Data/${name}.json`, data);
-
-                    for(let i in data){
-                        AllData.push(data[i])
-                        //console.log(AllData.length)
-                    }
-                }
-            }else if(result.status == 404){
-                var exist = statPath(`Data/${name}.json`); 
-                if(exist){
-                    return false
-                }else{
-                    console.log(`[${nowTime(1)}] ${name} : ${result.status} - Error - 72`);
-                    fs.writeFileSync(`404_Data/${name}.json`, data);
-                }
-            }else{
-                console.log(`[${nowTime(1)}] ${name} : ${result.status} - Error - 76`);
-                fs.writeFileSync(`404_Data/${name}.json`, JSON.stringify(data));
-            }
-        }).catch(function(error) {
-            //console.log(error);
-            var exist = statPath(`404_Data/${name}.json`); 
-            if(exist){
-                return false
-            }else{
-                console.log(`[${nowTime(1)}] ${name} : ${error?.response?.status} - Error - Catch`);
-                fs.writeFileSync(`404_Data/${name}.json`, JSON.stringify([]));
-            }
-            
-        });
-    }
+      }else{
+        console.log(`[${nowTime(1)}] ${name} : ${error?.response?.status} - Error - Catch`);
+        fs.writeFileSync(`Data/404/${name}.json`, JSON.stringify([]));
+        fs.writeFileSync(`Datas/${name}.json`, JSON.stringify([]));
+      }
+    });
+  }
 };
 
 fetchData = async () => {
-    console.log(`[${nowTime(1)}] Program Çalışmaya başladı`);
-    for(let city in cities){
-        //console.log(cities[city].name)
-        for(let i in countriesWithDistricts[cities[city].name]){
-            var url = `https://www.sansgirisim.com/data/${cities[city].name.turkishUpperCase()}-${countriesWithDistricts[cities[city].name.split(',')][i].turkishUpperCase()}.json`
-            var name = `${cities[city].name.turkishUpperCase()}-${countriesWithDistricts[cities[city].name.split(',')][i].turkishUpperCase()}`
-            //console.log(url)
+  // Data Cleared!
+  fs.rmSync('Data',{ recursive: true, force: true }, () => {
+    console.log(`[${nowTime(1)}] Data Folder Deleted!`);
+  });
 
-            //console.log('name : ', name, ' - url:',url)
-            fetchRetail(name);
+  fs.rmSync('Datas',{ recursive: true, force: true }, () => {
+    console.log(`[${nowTime(1)}] Datas Folder Deleted!`);
+  });
 
-            /*fs.appendFile(`list.txt`, url+'\n',"utf8", function(err) {
-                if(err) {return console.log(err)}
-            });*/
-        }
+  // Check & Create Folder
+  var DataFolder = statPath('Data')
+  if(!DataFolder){
+    await fs.mkdir('Data',{ recursive: true }, (err) => {
+      if (err) throw err;
+    });
+    console.log(`[${nowTime(1)}] Data Folder Created!`);
+  }
+
+  var Data404Folder = statPath('Data/404')
+  if(!Data404Folder){
+    await fs.mkdir('Data/404',{ recursive: true }, (err) => {
+      if (err) throw err;
+    });
+    console.log(`[${nowTime(1)}] Data/404 Folder Created!`);
+  }
+
+  var DatasFolder = statPath('Datas')
+  if(!DatasFolder){
+    await fs.mkdir('Datas',{ recursive: true }, (err) => {
+      if (err) throw err;
+    });
+    console.log(`[${nowTime(1)}] Datas Folder Created!`);
+  }
+  console.log(`[${nowTime(1)}] Program Çalışmaya başladı`);
+  for(let city in cities){
+    //console.log(cities[city].name)
+    for(let i in countriesWithDistricts[cities[city].name]){
+      var url = `https://www.sansgirisim.com/data/${cities[city].name.turkishUpperCase()}-${countriesWithDistricts[cities[city].name.split(',')][i].turkishUpperCase()}.json`
+      var name = `${cities[city].name.turkishUpperCase()}-${countriesWithDistricts[cities[city].name.split(',')][i].turkishUpperCase()}`
+      //console.log(url)
+
+      //console.log('name : ', name, ' - url:',url)
+      fetchRetail(name);
+
+      /*fs.appendFile(`list.txt`, url+'\n',"utf8", function(err) {
+          if(err) {return console.log(err)}
+      });*/
     }
+  }
 }
 fetchData()
 

@@ -1,7 +1,7 @@
 # Şans Girişim Bayi Listesi
 
 ## Kullanımı
-- Güncel veri çekmek için:
+- Verileri güncellemek için:
 `npm install & npm run start`
 
 - Verileri görüntülemek için:
