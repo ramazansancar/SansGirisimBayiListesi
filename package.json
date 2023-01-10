@@ -1,11 +1,11 @@
 {
-  "name": "SansGirisimBayiListesi",
+  "name": "sans_girisim_bayi_listesi",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon --watch index.js"
   },
   "keywords": [
     "bahis",
@@ -20,7 +20,14 @@
   "author": "Ramazan Sancar",
   "license": "ISC",
   "dependencies": {
-    "@rettersoft/retter-log": "^3.0.0",
     "axios": "^0.21.4"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "node_modules",
+      "Data/**",
+      "Datas/**",
+      "**.json"
+    ]
   }
 }

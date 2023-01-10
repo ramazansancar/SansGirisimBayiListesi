@@ -7,9 +7,12 @@
 - Verileri görüntülemek için:
 `[sehir] ve [ilce] degerlerini değiştirin.`
 ```python 
-https://raw.githubusercontent.com/ramazansancar/SansGirisimBayiListesi/master/Datas/[sehir]-[ilce].json
+https://raw.githubusercontent.com/ramazansancar/SansGirisimBayiListesi/master/Data/[sehir]-[ilce].json
 
-Örnek: https://raw.githubusercontent.com/ramazansancar/SansGirisimBayiListesi/master/Datas/ADANA-CEYHAN.json
+Örnek: https://raw.githubusercontent.com/ramazansancar/SansGirisimBayiListesi/master/Data/ADANA-CEYHAN.json
+
+Json: https://raw.githubusercontent.com/ramazansancar/SansGirisimBayiListesi/master/Datas.json
+Json (Şehir Ayrımlı): https://raw.githubusercontent.com/ramazansancar/SansGirisimBayiListesi/master/Datas_filter.json
 ```
 
 ## Veri Kaynağı

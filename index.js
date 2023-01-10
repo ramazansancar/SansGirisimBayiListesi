@@ -28,6 +28,7 @@ String.prototype.turkishUpperCase = function() {
         .replaceAll('ü','u')
         .toUpperCase();
 };
+
 var cities = [
     {"id":1,"name":"Adana"},{"id":2,"name":"Adıyaman"},{"id":3,"name":"Afyonkarahisar"},{"id":4,"name":"Ağrı"},{"id":5,"name":"Amasya"},{"id":6,"name":"Ankara"},{"id":7,"name":"Antalya"},{"id":8,"name":"Artvin"},{"id":9,"name":"Aydın"},{"id":10,"name":"Balıkesir"},{"id":11,"name":"Bilecik"},{"id":12,"name":"Bingöl"},{"id":13,"name":"Bitlis"},{"id":14,"name":"Bolu"},{"id":15,"name":"Burdur"},{"id":16,"name":"Bursa"},{"id":17,"name":"Çanakkale"},{"id":18,"name":"Çankırı"},{"id":19,"name":"Çorum"},{"id":20,"name":"Denizli"},{"id":21,"name":"Diyarbakır"},{"id":22,"name":"Edirne"},{"id":23,"name":"Elazığ"},{"id":24,"name":"Erzincan"},{"id":25,"name":"Erzurum"},{"id":26,"name":"Eskişehir"},{"id":27,"name":"Gaziantep"},{"id":28,"name":"Giresun"},{"id":29,"name":"Gümüşhane"},{"id":30,"name":"Hakkari"},{"id":31,"name":"Hatay"},{"id":32,"name":"Isparta"},{"id":33,"name":"Mersin"},{"id":34,"name":"İstanbul"},{"id":35,"name":"İzmir"},{"id":36,"name":"Kars"},{"id":37,"name":"Kastamonu"},{"id":38,"name":"Kayseri"},{"id":39,"name":"Kırklareli"},{"id":40,"name":"Kırşehir"},{"id":41,"name":"Kocaeli"},{"id":42,"name":"Konya"},{"id":43,"name":"Kütahya"},{"id":44,"name":"Malatya"},{"id":45,"name":"Manisa"},{"id":46,"name":"Kahramanmaraş"},{"id":47,"name":"Mardin"},{"id":48,"name":"Muğla"},{"id":49,"name":"Muş"},{"id":50,"name":"Nevşehir"},{"id":51,"name":"Niğde"},{"id":52,"name":"Ordu"},{"id":53,"name":"Rize"},{"id":54,"name":"Sakarya"},{"id":55,"name":"Samsun"},{"id":56,"name":"Siirt"},{"id":57,"name":"Sinop"},{"id":58,"name":"Sivas"},{"id":59,"name":"Tekirdağ"},{"id":60,"name":"Tokat"},{"id":61,"name":"Trabzon"},{"id":62,"name":"Tunceli"},{"id":63,"name":"Şanlıurfa"},{"id":64,"name":"Uşak"},{"id":65,"name":"Van"},{"id":66,"name":"Yozgat"},{"id":67,"name":"Zonguldak"},{"id":68,"name":"Aksaray"},{"id":69,"name":"Bayburt"},{"id":70,"name":"Karaman"},{"id":71,"name":"Kırıkkale"},{"id":72,"name":"Batman"},{"id":73,"name":"Şırnak"},{"id":74,"name":"Bartın"},{"id":75,"name":"Ardahan"},{"id":76,"name":"Iğdır"},{"id":77,"name":"Yalova"},{"id":78,"name":"Karabük"},{"id":79,"name":"Kilis"},{"id":80,"name":"Osmaniye"},{"id":81,"name":"Düzce"}
 ]
@@ -1077,7 +1078,19 @@ var countriesWithDistricts = {
     ]
 };
 
-function statPath(path) {  
+/* Test
+var cities = [
+  {"id":1,"name":"Adana"}
+];
+var countriesWithDistricts = {
+  Adana: [
+    "Aladağ",
+    "Ceyhan"
+  ],
+}
+*/
+
+function statPath(path){  
   try {  
     return fs.statSync(path);  
   } catch (ex) {}  
@@ -1104,85 +1117,29 @@ const nowTime = (i = 1) => {
   else return day + "-" + month + "-" + year +"_" + hour + "-" + minute+ "-" + second
 };
 
+// Temp Data
+let AllData = []
+let AllDataCity = {}
+let cityname = ''
+let count = 0
+let counter = setInterval(() => {count++;}, 1000)
+
+let validCounter = 0
+let invalidCounter = 0
+
+function stopCounter() {
+  clearInterval(counter)
+}
+
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-
-let AllData = [];
-
-fetchRetail = async (name) => {
-  var exist = statPath(`Datas/${name}.json`)
-  if(exist){
-    return false
-  }else{
-    await axios.get(`https://www.sansgirisim.com/data/${name}.json`,{
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.54 Safari/537.36',
-        //'User-Agent': 'PostmanRuntime/7.29.2',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7,zh-CN;q=0.6,zh-TW;q=0.5,zh;q=0.4,ja;q=0.3,ko;q=0.2',
-        'Content-Type': 'application/json',
-      }
-    }).then(result => {
-      var data = JSON.stringify(result.data)
-              .replaceAll('Retailer Number', 'Bayi_No')
-              .replaceAll('Branch Name', 'Sube_Adi')
-              .replaceAll('Address', 'Adres')
-              .replaceAll('Province', 'Sehir')
-              .replaceAll('District', 'Ilce')
-              .replaceAll(',"Y":', ',"Enlem":')
-              .replaceAll(',"X":', ',"Boylam":');
-
-      if(result.status == 200){
-        var exist = statPath(`Data/${name}.json`); 
-        if(exist){
-          return false
-        }else{
-          console.log(`[${nowTime(1)}] ${name} : ${result.status} - Başarıyla kayıt edildi!`);
-          fs.writeFileSync(`Data/${name}.json`, data);
-          fs.writeFileSync(`Datas/${name}.json`, data);
-
-          for(let i in data){
-            AllData.push(data[i])
-          }
-        }
-      }else if(result.status == 404){
-        var exist = statPath(`Data/${name}.json`); 
-        if(exist){
-          return false
-        }else{
-          console.log(`[${nowTime(1)}] ${name} : ${result.status} - Error - 72`);
-          fs.writeFileSync(`Data/404/${name}.json`, data);
-          fs.writeFileSync(`Datas/${name}.json`, data);
-        }
-      }else{
-        console.log(`[${nowTime(1)}] ${name} : ${result.status} - Error - 76`);
-        fs.writeFileSync(`Data/404/${name}.json`, JSON.stringify(data));
-        fs.writeFileSync(`Datas/${name}.json`, JSON.stringify(data));
-      }
-    }).catch(function(error) {
-      var exist = statPath(`Data/404/${name}.json`);
-      if(exist){
-        return false
-      }else{
-        console.log(`[${nowTime(1)}] ${name} : ${error?.response?.status} - Error - Catch`);
-        fs.writeFileSync(`Data/404/${name}.json`, JSON.stringify([]));
-        fs.writeFileSync(`Datas/${name}.json`, JSON.stringify([]));
-      }
-    });
-  }
-};
 
 fetchData = async () => {
   // Data Cleared!
   fs.rmSync('Data',{ recursive: true, force: true }, () => {
     console.log(`[${nowTime(1)}] Data Folder Deleted!`);
   });
-
-  fs.rmSync('Datas',{ recursive: true, force: true }, () => {
-    console.log(`[${nowTime(1)}] Datas Folder Deleted!`);
-  });
-
   // Check & Create Folder
   var DataFolder = statPath('Data')
   if(!DataFolder){
@@ -1191,38 +1148,92 @@ fetchData = async () => {
     });
     console.log(`[${nowTime(1)}] Data Folder Created!`);
   }
-
-  var Data404Folder = statPath('Data/404')
-  if(!Data404Folder){
-    await fs.mkdir('Data/404',{ recursive: true }, (err) => {
-      if (err) throw err;
-    });
-    console.log(`[${nowTime(1)}] Data/404 Folder Created!`);
-  }
-
-  var DatasFolder = statPath('Datas')
-  if(!DatasFolder){
-    await fs.mkdir('Datas',{ recursive: true }, (err) => {
-      if (err) throw err;
-    });
-    console.log(`[${nowTime(1)}] Datas Folder Created!`);
-  }
   console.log(`[${nowTime(1)}] Program Çalışmaya başladı`);
   for(let city in cities){
+    cityname = `${cities[city].name.turkishUpperCase()}`
+    AllDataCity[cityname] = []
     //console.log(cities[city].name)
     for(let i in countriesWithDistricts[cities[city].name]){
       var url = `https://www.sansgirisim.com/data/${cities[city].name.turkishUpperCase()}-${countriesWithDistricts[cities[city].name.split(',')][i].turkishUpperCase()}.json`
+      
       var name = `${cities[city].name.turkishUpperCase()}-${countriesWithDistricts[cities[city].name.split(',')][i].turkishUpperCase()}`
+
+      var exist = statPath(`Datas/${name}.json`)
+      if(exist){
+        return false
+      }else{
+        await axios.get(`https://www.sansgirisim.com/data/${name}.json`,{
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.54 Safari/537.36',
+            //'User-Agent': 'PostmanRuntime/7.29.2',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7,zh-CN;q=0.6,zh-TW;q=0.5,zh;q=0.4,ja;q=0.3,ko;q=0.2',
+            'Content-Type': 'application/json',
+          }
+        }).then(result => {
+          var data = JSON.stringify(result.data)
+                  .replaceAll('Retailer Number', 'BayiNo')
+                  .replaceAll('Branch Name', 'SubeAdi')
+                  .replaceAll('Address', 'Adres')
+                  .replaceAll('Province', 'Sehir')
+                  .replaceAll('District', 'Ilce')
+                  .replaceAll(',"Y":', ',"Enlem":')
+                  .replaceAll(',"X":', ',"Boylam":');
+
+          if(result.status == 200){
+            var exist = statPath(`Data/${name}.json`); 
+            if(exist){
+              return false
+            }else{
+              console.log(`[${nowTime(1)}] ${name} : ${result.status} - Başarıyla kayıt edildi!`);
+              fs.writeFileSync(`Data/${name}.json`, data);
+              validCounter++
+
+              JSON.parse(data).map( (value,index,array) => {
+                if(value != undefined){
+                  AllData.push(value)
+                  AllDataCity[cityname].push(value)
+                }
+              })
+            }
+          }else if(result.status == 404){
+            var exist = statPath(`Data/${name}.json`); 
+            if(exist){
+              return false
+            }else{
+              console.log(`[${nowTime(1)}] ${name} : ${result.status} - Error - 72`);
+              fs.writeFileSync(`Data/${name}.json`, JSON.stringify(data));
+              invalidCounter++
+            }
+          }else{
+            console.log(`[${nowTime(1)}] ${name} : ${result.status} - Error - 76`);
+            fs.writeFileSync(`Data/${name}.json`, JSON.stringify(data));
+            invalidCounter++
+          }
+        }).catch(function(error) {
+          var exist = statPath(`Data/${name}.json`);
+          if(exist){
+            return false
+          }else{
+            console.log(`[${nowTime(1)}] ${name} : ${JSON.stringify(error?.response?.status)} / ${JSON.stringify(error?.response?.statusText)} - Error - Catch`);
+            fs.writeFileSync(`Data/${name}.json`, JSON.stringify([]));
+            invalidCounter++
+          }
+        });
+      }
+
       //console.log(url)
-
       //console.log('name : ', name, ' - url:',url)
-      fetchRetail(name);
-
+      //fetchRetail(name);
       /*fs.appendFile(`list.txt`, url+'\n',"utf8", function(err) {
           if(err) {return console.log(err)}
       });*/
     }
   }
+  fs.writeFileSync(`Datas.json`, JSON.stringify(AllData))
+  fs.writeFileSync(`Datas_filter.json`, JSON.stringify(AllDataCity))
+  stopCounter()
+  console.log(`[${nowTime(1)}] Program Çalışması bitti - ${Math.floor(count/60)} dakika, ${(count%60)} saniye sürdü!`);
+  console.log(`[${nowTime(1)}] ${validCounter} adet başarılı, ${invalidCounter} adet başarısız!`);
 }
 fetchData()
-
