@@ -1223,7 +1223,7 @@ fetchData = async () => {
       var url = `https://www.sansgirisim.com/data/${cities[city].name.turkishUpperCase()}-${countriesWithDistricts[cities[city].name.split(',')][i].turkishUpperCase()}.json`
       
       var name = `${cities[city].name.turkishUpperCase()}-${countriesWithDistricts[cities[city].name.split(',')][i].turkishUpperCase()}`
-      fetchRetail(name,cityname)
+      await fetchRetail(name,cityname)
 
       //console.log(url)
       //console.log('name : ', name, ' - url:',url)
@@ -1236,7 +1236,7 @@ fetchData = async () => {
   fs.writeFileSync(`Datas.json`, JSON.stringify(AllData))
   fs.writeFileSync(`Datas_filter.json`, JSON.stringify(AllDataCity))
   stopCounter()
-  //console.log(`[${nowTime(1)}] Program Çalışması bitti - ${Math.floor(count/60)} dakika, ${(count%60)} saniye sürdü!`);
-  //console.log(`[${nowTime(1)}] ${validCounter} adet başarılı, ${invalidCounter} adet başarısız!`);
+  console.log(`[${nowTime(1)}] Program Çalışması bitti - ${Math.floor(count/60)} dakika, ${(count%60)} saniye sürdü!`);
+  console.log(`[${nowTime(1)}] ${validCounter} adet başarılı, ${invalidCounter} adet başarısız!`);
 }
 fetchData()
