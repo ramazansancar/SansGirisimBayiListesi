@@ -1,7 +1,7 @@
 git config --global user.email $mail
 git config --global user.name $name
 git remote set-url origin https://$username:$token@github.com/$username/SansGirisimBayiListesi.git
-if git status --porcelain | preq -q "Data*"; then 
+if git status --porcelain | preq -q 'Data*'; then 
 	git add --all Data/
 	git add Datas_filter.json
 	git add Datas.json
