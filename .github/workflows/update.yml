@@ -1,0 +1,43 @@
+name: Scheduled Trigger
+
+on: 
+  push:
+    branches:
+      - master
+    paths:
+      - '*'
+  schedule:
+    - cron: '0 02 * * *' # 
+  
+  # This command allows us to run the Action automatically from the Actions tab.
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    
+    - name: NPM Install
+      run: npm install
+    
+    - name: Run Code
+      run: npm run start
+    
+    - name: Deploy
+      run: chmod +x deploy.sh && export token=${{ secrets.TOKEN }} username=${{secrets.USERNAME}} mail=${{secrets.MAIL}} name=${{secrets.NAME}} && ./deploy.sh
+      env:
+        CI: true
+        ACCESS_TOKEN: ${{ secrets.TOKEN }}
+        BASE_BRANCH: master
+        BRANCH: master
