@@ -32,7 +32,7 @@ jobs:
       run: npm install
     
     - name: Run Code
-      run: npm run start
+      run: npm run update
     
     - name: Deploy
       run: chmod +x deploy.sh && export token=${{ secrets.TOKEN }} username=${{secrets.USERNAME}} mail=${{secrets.MAIL}} name=${{secrets.NAME}} && ./deploy.sh

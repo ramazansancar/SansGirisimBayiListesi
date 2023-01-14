@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "update": "node update.js",
     "dev": "nodemon --watch index.js"
   },
   "keywords": [
