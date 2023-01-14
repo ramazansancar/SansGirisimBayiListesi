@@ -1,13 +1,13 @@
 name: Scheduled Trigger
 
 on: 
-  push:
-    branches:
-      - master
-    paths:
-      - 'Data/**.json'
-      - 'Datas.json'
-      - 'Datas_filter.json'
+  #push:
+  #  branches:
+  #    - master
+  #  paths:
+  #    - 'Data/**.json'
+  #    - 'Datas.json'
+  #    - 'Datas_filter.json'
   schedule:
     - cron: '0 02 * * *' # 
   
