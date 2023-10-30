@@ -21,7 +21,10 @@
   "author": "Ramazan Sancar",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.4"
+    "axios": "^1.4.0",
+    "crypto": "^1.0.1",
+    "http": "0.0.1-security",
+    "https": "^1.0.0"
   },
   "nodemonConfig": {
     "ignore": [
